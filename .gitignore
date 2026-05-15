@@ -1,0 +1,11 @@
+# KDE Plasma packaging artifacts
+*.plasmoid
+
+# Python
+__pycache__/
+*.pyc
+
+# Editor
+.vscode/
+*.swp
+*~
