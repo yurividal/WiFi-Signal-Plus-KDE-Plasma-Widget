@@ -20,7 +20,7 @@ small icon in the panel. Click it to open a popup with:
 
 ## Screenshots
 
-_TODO_
+![WiFi Signal Plus popup showing WiFi 6 connection details](screenshots/screenshot.png)
 
 ## Requirements
 
@@ -95,7 +95,7 @@ contents/
 ## Credits
 
 - Original GNOME extension and all icons: [Jalil Arfaoui](https://github.com/JalilArfaoui/gnome-extension-wifi-signal-plus)
-- KDE port: vibe-coded with GitHub Copilot
+- KDE port: vibe-coded with GitHub Copilot (Claude Code)
 
 ## License
 
