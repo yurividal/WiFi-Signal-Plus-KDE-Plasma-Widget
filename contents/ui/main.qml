@@ -395,10 +395,10 @@ PlasmoidItem {
 
     // ── Compact representation ────────────────────────────────────────────
     compactRepresentation: Item {
-        // Use the user-configured size (default 16 px).
-        // Must be set via Layout so the panel allocates the right slot width.
+        // Layout.preferredWidth is a size *hint* for the panel. The system tray
+        // ignores it and manages icon sizes itself — so no maximumWidth here, or
+        // the system tray gets an over-constrained slot and renders oddly.
         Layout.preferredWidth: Plasmoid.configuration.iconSize
-        Layout.maximumWidth:   Plasmoid.configuration.iconSize
 
         readonly property string genSrc: root.wifiInfo.connected
             ? root.genIconSource(root.wifiInfo.generation) : ""
@@ -422,7 +422,13 @@ PlasmoidItem {
 
         MouseArea {
             anchors.fill: parent
-            onClicked: root.expanded = !root.expanded
+            // Capture expanded state at press time. Without this, if the popup
+            // is already open the system tray closes it first, then our
+            // onClicked evaluates !expanded = true and immediately reopens it,
+            // making the click appear to do nothing.
+            property bool wasExpanded: false
+            onPressed:  wasExpanded = root.expanded
+            onClicked:  root.expanded = !wasExpanded
         }
     }
 
