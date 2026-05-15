@@ -18,5 +18,7 @@
         "EnabledByDefault": true
     },
     "X-Plasma-API-Minimum-Version": "6.0",
-    "X-Plasma-StandAloneApp": false
+    "X-Plasma-StandAloneApp": false,
+    "X-Plasma-NotificationArea": "true",
+    "X-Plasma-NotificationAreaCategory": "Hardware"
 }
