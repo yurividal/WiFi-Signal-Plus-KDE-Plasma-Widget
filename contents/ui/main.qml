@@ -27,6 +27,16 @@ import "../js/wifiGeneration.js" as WG
 PlasmoidItem {
     id: root
 
+    // Drive the tray icon via Plasmoid.icon so the shell's
+    // DefaultCompactRepresentation handles sizing and clicks — it uses
+    // the proven wasExpanded pattern and works identically in both
+    // the panel and the system tray.
+    Plasmoid.icon: {
+        if (!wifiInfo.connected) return "network-wireless"
+        const name = WG.getGenerationIconFilename(wifiInfo.generation)
+        return name ? Qt.resolvedUrl("../icons/" + name).toString() : "network-wireless"
+    }
+
     preferredRepresentation: compactRepresentation
     switchWidth:  Kirigami.Units.gridUnit * 24
     switchHeight: Kirigami.Units.gridUnit * 24
@@ -391,45 +401,6 @@ PlasmoidItem {
     function genIconSource(generation) {
         const name = WG.getGenerationIconFilename(generation)
         return name ? Qt.resolvedUrl("../icons/" + name) : ""
-    }
-
-    // ── Compact representation ────────────────────────────────────────────
-    compactRepresentation: Item {
-        // Layout.preferredWidth is a size *hint* for the panel. The system tray
-        // ignores it and manages icon sizes itself — so no maximumWidth here, or
-        // the system tray gets an over-constrained slot and renders oddly.
-        Layout.preferredWidth: Plasmoid.configuration.iconSize
-
-        readonly property string genSrc: root.wifiInfo.connected
-            ? root.genIconSource(root.wifiInfo.generation) : ""
-
-        Kirigami.Icon {
-            id: genIcon
-            anchors.fill: parent
-            visible: parent.genSrc !== ""
-            source:  parent.genSrc
-            // isMask:false keeps PNG colours untouched (no theme colourisation)
-            isMask: false
-        }
-
-        PC3.Label {
-            anchors.centerIn: parent
-            visible: root.wifiInfo.connected && !genIcon.visible
-            text: WG.getGenerationLabel(root.wifiInfo.connected ? root.wifiInfo.generation : 0)
-            font.bold: true
-            font.pixelSize: parent.height * 0.45
-        }
-
-        MouseArea {
-            anchors.fill: parent
-            // Capture expanded state at press time. Without this, if the popup
-            // is already open the system tray closes it first, then our
-            // onClicked evaluates !expanded = true and immediately reopens it,
-            // making the click appear to do nothing.
-            property bool wasExpanded: false
-            onPressed:  wasExpanded = root.expanded
-            onClicked:  root.expanded = !wasExpanded
-        }
     }
 
     // ── Full representation ───────────────────────────────────────────────
