@@ -36,8 +36,8 @@ small icon in the panel. Click it to open a popup with:
 ### From source
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/plasma-widget-wifi-signal-plus
-cd plasma-widget-wifi-signal-plus
+git clone https://github.com/yurividal/WiFi-Signal-Plus-KDE-Plasma-Widget.git
+cd WIFI-Signal-Plus-KDE-Plasma-Widget
 ./install.sh          # or manually:
 kpackagetool6 --install . --type Plasma/Applet
 ```
