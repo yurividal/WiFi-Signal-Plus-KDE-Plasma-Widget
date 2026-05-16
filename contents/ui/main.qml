@@ -44,7 +44,7 @@ PlasmoidItem {
             width:  parent.iconPx
             height: parent.iconPx
             source: {
-                if (!root.wifiInfo.connected) return "network-wireless"
+                if (!root.wifiInfo.connected) return "network-wireless-disconnected"
                 const name = WG.getGenerationIconFilename(root.wifiInfo.generation)
                 return name ? Qt.resolvedUrl("../icons/" + name) : "network-wireless"
             }
