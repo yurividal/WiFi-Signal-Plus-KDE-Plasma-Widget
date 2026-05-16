@@ -27,17 +27,42 @@ import "../js/wifiGeneration.js" as WG
 PlasmoidItem {
     id: root
 
-    // Drive the tray icon via Plasmoid.icon so the shell's
-    // DefaultCompactRepresentation handles sizing and clicks — it uses
-    // the proven wasExpanded pattern and works identically in both
-    // the panel and the system tray.
-    Plasmoid.icon: {
-        if (!wifiInfo.connected) return "network-wireless"
-        const name = WG.getGenerationIconFilename(wifiInfo.generation)
-        return name ? Qt.resolvedUrl("../icons/" + name).toString() : "network-wireless"
+    // ── Compact representation ────────────────────────────────────────────
+    // Defined explicitly so that:
+    //   • the icon is constrained to Plasmoid.configuration.iconSize, fixing
+    //     the "giant icon" problem when used as a standalone desktop widget.
+    //   • the setting in configGeneral.qml actually has an effect.
+    compactRepresentation: Item {
+        id: compactRoot
+        readonly property int iconPx: Plasmoid.configuration.iconSize || 22
+
+        implicitWidth:  iconPx
+        implicitHeight: iconPx
+
+        Kirigami.Icon {
+            anchors.centerIn: parent
+            width:  parent.iconPx
+            height: parent.iconPx
+            source: {
+                if (!root.wifiInfo.connected) return "network-wireless"
+                const name = WG.getGenerationIconFilename(root.wifiInfo.generation)
+                return name ? Qt.resolvedUrl("../icons/" + name) : "network-wireless"
+            }
+            active: compactMouse.containsMouse
+        }
+
+        MouseArea {
+            id: compactMouse
+            anchors.fill: parent
+            hoverEnabled: true
+            onClicked: root.expanded = !root.expanded
+        }
     }
 
-    preferredRepresentation: compactRepresentation
+    // Do NOT set preferredRepresentation here.
+    // SystemTrayState.setActiveApplet() skips applets that have
+    // preferredRepresentation set, so the popup would never open in the tray.
+    // The compact representation defined above is still used by the tray.
     switchWidth:  Kirigami.Units.gridUnit * 24
     switchHeight: Kirigami.Units.gridUnit * 24
 
@@ -136,6 +161,14 @@ PlasmoidItem {
             if (root.interfaceName) runCmd("iw dev " + root.interfaceName + " scan dump")
             runCmd("python3 " + root.nmApsScript)
         }
+    }
+
+    // The system tray intercepts mouse events itself and signals applets via
+    // Plasmoid.activated() instead of propagating clicks to the compact
+    // representation's MouseArea. Handle both paths here.
+    Connections {
+        target: Plasmoid
+        function onActivated() { root.expanded = !root.expanded }
     }
 
     // Refresh AP data when the popup is opened
